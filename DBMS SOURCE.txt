@@ -1,0 +1,439 @@
+
+index.html:	
+
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Hospital Management System</title>
+<link href="css/style.css" rel="stylesheet" type="text/css"  media="all" />
+<link href='http://fonts.googleapis.com/css?family=Ropa+Sans' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="css/responsiveslides.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<scriptsrc="js/responsiveslides.min.js"></script>
+<script> // You can also use "$(window).load(function() {"
+			$(function () {
+			      // Slideshow 1
+			      $("#slider1").responsiveSlides({
+			maxwidth: 1600,
+			speed: 600
+			      });
+			});
+		</script>
+	</head>
+	<body>
+		<!--start-wrap-->
+		
+			<!--start-header-->
+			<div class="header">
+				<div class="wrap">
+				<!--start-logo-->
+				<div class="logo">
+					<a href="index.html" style="font-size: 30px;">Hospital Management system</a>
+				</div>
+				<!--end-logo-->
+				<!--start-top-nav-->
+				<div class="top-nav">
+					<ul>
+						<li class="active"><a href="index.html">Home</a></li>
+						
+						<li><a href="contact.php">contact</a></li>
+					</ul>					
+				</div>
+				<div class="clear"></div>
+				<!--end-top-nav-->
+			</div>
+			<!--end-header-->
+		</div>
+		<div class="clear"></div>
+			<!--start-image-slider---->
+					<div class="image-slider">
+						<!-- Slideshow 1 -->
+					<ul class="rslides" id="slider1">
+					<li><imgsrc="images/slider-image1.jpg" alt=""></li>
+					<li><imgsrc="images/slider-image2.jpg" alt=""></li>
+					<li><imgsrc="images/slider-image1.jpg" alt=""></li>
+					</ul>
+						<!-- Slideshow 2 -->
+					</div>
+					<!--End-image-slider---->
+		<div class="clear"></div>
+		<div class="content-grids">
+			<div class="wrap">
+			<div class="section group">				
+			<div class="listview_1_of_3 images_1_of_3">
+					<div class="listimg listimg_1_of_2">
+						<imgsrc="images/grid-img3.png">
+					</div>
+					<div class="text list_1_of_2">
+						<h3>Patients</h3>
+						<p>Register & Book Appointment</p>
+						<div class="button"><span><a href="hms/user-login.php">Click Here</a></span></div>
+				</div>
+				</div>	
+
+				<div class="listview_1_of_3 images_1_of_3">
+					<div class="listimg listimg_1_of_2">
+						<imgsrc="images/grid-img1.png">
+					</div>
+					<div class="text list_1_of_2">
+						<h3>Doctors Login</h3>
+						
+						<div class="button"><span><a href="hms/doctor/">Click Here</a></span></div>
+					</div>
+				</div>
+<div class="listview_1_of_3 images_1_of_3">
+					<div class="listimg listimg_1_of_2">
+						<imgsrc="images/grid-img2.png">
+					</div>
+					<div class="text list_1_of_2">
+						<h3>Admin Login</h3>
+<div class="button"><span><a href="hms/admin">Click Here</a></span></div>
+				</div>
+				</div>			
+			</div>
+		</div></div>
+		<div class="wrap">
+		<div class="content-box">
+		<div class="section group">
+				<div class="col_1_of_3 span_1_of_3 frist">
+				</div>
+				<div class="col_1_of_3 span_1_of_3 second">
+			</div>
+				<div class="col_1_of_3 span_1_of_3 frist">
+			</div>
+			</div>
+		</div>
+		</div>
+		<div class="clear"></div>
+		<div class="footer">
+			<div class="wrap">
+			<div class="footer-left">
+					<ul>
+						<li><a href="index.html">Home</a></li>
+						<li><a href="contact.php">contact</a></li>
+					</ul>
+			</div>
+			<div class="clear"></div>
+		</div>
+		</div>
+		<!--end-wrap-->
+	</body>
+</html>
+
+Doctor/index.php
+<?php
+session_start();
+include("include/config.php");
+error_reporting(0);
+if(isset($_POST['submit']))
+{
+$ret=mysqli_query($con,"SELECT * FROM doctors WHERE docEmail='".$_POST['username']."' and password='".md5($_POST['password'])."'");
+$num=mysqli_fetch_array($ret);
+if($num>0)
+{
+$extra="dashboard.php";
+$_SESSION['dlogin']=$_POST['username'];
+$_SESSION['id']=$num['id'];
+$uip=$_SERVER['REMOTE_ADDR'];
+$status=1;
+$log=mysqli_query($con,"insert into doctorslog(uid,username,userip,status) values('".$_SESSION['id']."','".$_SESSION['dlogin']."','$uip','$status')");
+$host=$_SERVER['HTTP_HOST'];
+$uri=rtrim(dirname($_SERVER['PHP_SELF']),'/\\');
+header("location:http://$host$uri/$extra");
+exit();
+}
+else
+{
+$host  = $_SERVER['HTTP_HOST'];
+$_SESSION['dlogin']=$_POST['username'];
+$uip=$_SERVER['REMOTE_ADDR'];
+$status=0;
+mysqli_query($con,"insert into doctorslog(username,userip,status) values('".$_SESSION['dlogin']."','$uip','$status')");
+$_SESSION['errmsg']="Invalid username or password";
+$extra="index.php";
+$uri  = rtrim(dirname($_SERVER['PHP_SELF']),'/\\');
+header("location:http://$host$uri/$extra");
+exit();
+}
+}
+?>
+
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Doctor Login</title>
+		
+		<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="vendor/fontawesome/css/font-awesome.min.css">
+		<link rel="stylesheet" href="vendor/themify-icons/themify-icons.min.css">
+		<link href="vendor/animate.css/animate.min.css" rel="stylesheet" media="screen">
+		<link href="vendor/perfect-scrollbar/perfect-scrollbar.min.css" rel="stylesheet" media="screen">
+		<link href="vendor/switchery/switchery.min.css" rel="stylesheet" media="screen">
+		<link rel="stylesheet" href="assets/css/styles.css">
+		<link rel="stylesheet" href="assets/css/plugins.css">
+		<link rel="stylesheet" href="assets/css/themes/theme-1.css" id="skin_color" />
+	</head>
+	<body class="login">
+		<div class="row">
+			<div class="main-login col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-4">
+				<div class="logo margin-top-30">
+				<a href="../../index.html">	<h2> HMS | Doctor Login</h2></a>
+				</div>
+
+				<div class="box-login">
+					<form class="form-login" method="post">
+						<fieldset>
+							<legend>
+								Sign in to your account
+							</legend>
+							<p>
+								Please enter your name and password to log in.<br />
+								<span style="color:red;"><?php echo $_SESSION['errmsg']; ?><?php echo $_SESSION['errmsg']="";?></span>
+							</p>
+							<div class="form-group">
+								<span class="input-icon">
+									<input type="text" class="form-control" name="username" placeholder="Username">
+									<i class="fa fa-user"></i> </span>
+							</div>
+							<div class="form-group form-actions">
+								<span class="input-icon">
+									<input type="password" class="form-control password" name="password" placeholder="Password">
+									<i class="fa fa-lock"></i>
+									 </span>
+									 <a href="forgot-password.php">
+									Forgot Password ?
+								</a>
+							</div>
+							<div class="form-actions">
+								
+								<button type="submit" class="btn btn-primary pull-right" name="submit">
+									Login <i class="fa fa-arrow-circle-right"></i>
+								</button>
+							</div>
+							
+						
+						</fieldset>
+					</form>
+
+					<div class="copyright">
+						&copy; <span class="current-year"></span><span class="text-bold text-uppercase"> HMS</span>. <span>All rights reserved</span>
+					</div>
+			
+				</div>
+
+			</div>
+		</div>
+		<script src="vendor/jquery/jquery.min.js"></script>
+		<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+		<script src="vendor/modernizr/modernizr.js"></script>
+		<script src="vendor/jquery-cookie/jquery.cookie.js"></script>
+		<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+		<script src="vendor/switchery/switchery.min.js"></script>
+		<script src="vendor/jquery-validation/jquery.validate.min.js"></script>
+	
+		<script src="assets/js/main.js"></script>
+
+		<script src="assets/js/login.js"></script>
+		<script>
+			jQuery(document).ready(function() {
+				Main.init();
+				Login.init();
+			});
+		</script>
+	
+	</body>
+	<!-- end: BODY -->
+</html>
+Doctor/appointment-history.php	
+<?php
+session_start();
+error_reporting(0);
+include('include/config.php');
+include('include/checklogin.php');
+check_login();
+if(isset($_GET['cancel']))
+		  {
+		          mysqli_query($con,"update appointment set doctorStatus='0' where id = '".$_GET['id']."'");
+                  $_SESSION['msg']="Appointment canceled !!";
+		  }
+?>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Doctor | Appointment History</title>
+		
+		<link href="http://fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Raleway:300,400,500,600,700|Crete+Round:400italic" rel="stylesheet" type="text/css" />
+		<link rel="stylesheet" href="vendor/bootstrap/css/bootstrap.min.css">
+		<link rel="stylesheet" href="vendor/fontawesome/css/font-awesome.min.css">
+		<link rel="stylesheet" href="vendor/themify-icons/themify-icons.min.css">
+		<link href="vendor/animate.css/animate.min.css" rel="stylesheet" media="screen">
+		<link href="vendor/perfect-scrollbar/perfect-scrollbar.min.css" rel="stylesheet" media="screen">
+		<link href="vendor/switchery/switchery.min.css" rel="stylesheet" media="screen">
+		<link href="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css" rel="stylesheet" media="screen">
+		<link href="vendor/select2/select2.min.css" rel="stylesheet" media="screen">
+		<link href="vendor/bootstrap-datepicker/bootstrap-datepicker3.standalone.min.css" rel="stylesheet" media="screen">
+		<link href="vendor/bootstrap-timepicker/bootstrap-timepicker.min.css" rel="stylesheet" media="screen">
+		<link rel="stylesheet" href="assets/css/styles.css">
+		<link rel="stylesheet" href="assets/css/plugins.css">
+		<link rel="stylesheet" href="assets/css/themes/theme-1.css" id="skin_color" />
+	</head>
+	<body>
+		<div id="app">		
+<?php include('include/sidebar.php');?>
+			<div class="app-content">
+				
+
+					<?php include('include/header.php');?>
+				<!-- end: TOP NAVBAR -->
+				<div class="main-content" >
+					<div class="wrap-content container" id="container">
+						<!-- start: PAGE TITLE -->
+						<section id="page-title">
+							<div class="row">
+								<div class="col-sm-8">
+									<h1 class="mainTitle">Doctor  | Appointment History</h1>
+																	</div>
+								<ol class="breadcrumb">
+									<li>
+										<span>Doctor </span>
+									</li>
+									<li class="active">
+										<span>Appointment History</span>
+									</li>
+								</ol>
+							</div>
+						</section>
+						<!-- end: PAGE TITLE -->
+						<!-- start: BASIC EXAMPLE -->
+						<div class="container-fluid container-fullw bg-white">
+						
+
+									<div class="row">
+								<div class="col-md-12">
+									
+									<p style="color:red;"><?php echo htmlentities($_SESSION['msg']);?>
+								<?php echo htmlentities($_SESSION['msg']="");?></p>	
+									<table class="table table-hover" id="sample-table-1">
+										<thead>
+											<tr>
+												<th class="center">#</th>
+												<th class="hidden-xs">Patient  Name</th>
+												<th>Specialization</th>
+												<th>Consultancy Fee</th>
+												<th>Appointment Date / Time </th>
+												<th>Appointment Creation Date  </th>
+												<th>Current Status</th>
+												<th>Action</th>
+												
+											</tr>
+										</thead>
+										<tbody>
+<?php
+$sql=mysqli_query($con,"select users.fullName as fname,appointment.*  from appointment join users on users.id=appointment.userId where appointment.doctorId='".$_SESSION['id']."'");
+$cnt=1;
+while($row=mysqli_fetch_array($sql))
+{
+?>
+
+											<tr>
+												<td class="center"><?php echo $cnt;?>.</td>
+												<td class="hidden-xs"><?php echo $row['fname'];?></td>
+												<td><?php echo $row['doctorSpecialization'];?></td>
+												<td><?php echo $row['consultancyFees'];?></td>
+												<td><?php echo $row['appointmentDate'];?> / <?php echo
+												 $row['appointmentTime'];?>
+												</td>
+												<td><?php echo $row['postingDate'];?></td>
+												<td>
+<?php if(($row['userStatus']==1) && ($row['doctorStatus']==1))  
+{
+	echo "Active";
+}
+if(($row['userStatus']==0) && ($row['doctorStatus']==1))  
+{
+	echo "Cancel by Patient";
+}
+
+if(($row['userStatus']==1) && ($row['doctorStatus']==0))  
+{
+	echo "Cancel by you";
+}
+
+
+
+												?></td>
+												<td >
+												<div class="visible-md visible-lg hidden-sm hidden-xs">
+							<?php if(($row['userStatus']==1) && ($row['doctorStatus']==1))  
+{ ?>
+
+													
+	<a href="appointment-history.php?id=<?php echo $row['id']?>&cancel=update" onClick="return confirm('Are you sure you want to cancel this appointment ?')"class="btn btn-transparent btn-xs tooltips" title="Cancel Appointment" tooltip-placement="top" tooltip="Remove">Cancel</a>
+	<?php } else {
+
+		echo "Canceled";
+		} ?>
+												</div>
+												</td>
+											</tr>
+											
+											<?php 
+$cnt=$cnt+1;
+											 }?>
+											
+											
+										</tbody>
+									</table>
+								</div>
+							</div>
+								</div>
+						
+						<!-- end: BASIC EXAMPLE -->
+						<!-- end: SELECT BOXES -->
+						
+					</div>
+				</div>
+			</div>
+			<!-- start: FOOTER -->
+	<?php include('include/footer.php');?>
+			<!-- end: FOOTER -->
+		
+			<!-- start: SETTINGS -->
+	<?php include('include/setting.php');?>
+			
+			<!-- end: SETTINGS -->
+		</div>
+		<!-- start: MAIN JAVASCRIPTS -->
+		<script src="vendor/jquery/jquery.min.js"></script>
+		<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+		<script src="vendor/modernizr/modernizr.js"></script>
+		<script src="vendor/jquery-cookie/jquery.cookie.js"></script>
+		<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+		<script src="vendor/switchery/switchery.min.js"></script>
+		<!-- end: MAIN JAVASCRIPTS -->
+		<!-- start: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
+		<script src="vendor/maskedinput/jquery.maskedinput.min.js"></script>
+		<script src="vendor/bootstrap-touchspin/jquery.bootstrap-touchspin.min.js"></script>
+		<script src="vendor/autosize/autosize.min.js"></script>
+		<script src="vendor/selectFx/classie.js"></script>
+		<script src="vendor/selectFx/selectFx.js"></script>
+		<script src="vendor/select2/select2.min.js"></script>
+		<script src="vendor/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+		<script src="vendor/bootstrap-timepicker/bootstrap-timepicker.min.js"></script>
+		<!-- end: JAVASCRIPTS REQUIRED FOR THIS PAGE ONLY -->
+		<!-- start: CLIP-TWO JAVASCRIPTS -->
+		<script src="assets/js/main.js"></script>
+		<!-- start: JavaScript Event Handlers for this page -->
+		<script src="assets/js/form-elements.js"></script>
+		<script>
+			jQuery(document).ready(function() {
+				Main.init();
+				FormElements.init();
+			});
+		</script>
+		<!-- end: JavaScript Event Handlers for this page -->
+		<!-- end: CLIP-TWO JAVASCRIPTS -->
+	</body>
+</html>
